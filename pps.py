@@ -6,7 +6,7 @@
 # the function for calculate
 
 fps = 1
-fps_pe = 1
+fps_pe = 120
 activityKartRadius = 3 # **0.5
 
 def main(data):
