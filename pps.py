@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# 20211224, the program for calculate roles, license is GPLv3, by alf of stk
+# 202206, the program for calculate roles, license is GPLv3, by alf of stk
 
 
 # the function for calculate
@@ -84,7 +84,7 @@ def main(data):
                     if trend == 'def':
                         blockScore[name] += speed**(1/3)*fps/fps_pe/3
                     if trend == 'att':
-                        pushScore[name] += speed**(1/3)*fps/fps_pe/3*max(0,min(1,2-puckz*2/fieldLen)) # skip stupid push maybe
+                        pushScore[name] += speed**(1/3)*fps/fps_pe/3*max(0,min(1,2-puck['z']*zModifier[name]*2/fieldLen)) # skip stupid push maybe
         elif dataType == 'GAME_START':
             fieldLen = 60 # 1/2 field length
             oldPuck, puck, playerPos = {'z':0, 'x':0}, {'z':0, 'x':0}, {} # position
