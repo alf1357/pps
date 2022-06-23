@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# 202206, the program for calculate roles, license is GPLv3, by alf of stk
+# 20211224, the program for calculate roles, license is GPLv3, by alf of stk
 
 
 # the function for calculate
@@ -45,12 +45,12 @@ def main(data):
                     defScoreDelta = (3-abs(max(-3,min(2,(optimalzPosition-playerz)*4/fieldLen))))/(1+max(0.1,abs(optimalxPosition-playerPos[name]['x'])/fieldLen))
                     if puckz < -fieldLen/2: defScoreDelta = defScoreDelta*(fieldLen*3/2+puckz)/fieldLen
                     defScore[name] += defScoreDelta #positional defense
-                    blockScore[name] += activityKartRadius/max((zDistance+3)**2+xDistance**2,activityKartRadius)*(abs(puckzspeed)+1) #block defense
+                    blockScore[name] += activityKartRadius/max((zDistance+3)**2+xDistance**2,activityKartRadius)*(abs(puckzspeed)/12+10) #block defense
                 if trend == 'att':
                     if puckz < fieldLen/2: fieldGoalScore[name] += -fieldLen*2/3-playerz
                     optimalzPosition = puckz-fieldLen/14
                     attScore[name] += (1-abs(max(-1,min(1,-(optimalzPosition-playerz)*4/fieldLen)))) # positional attack
-                    pushScore[name] += activityKartRadius/max((zDistance+1)**2+xDistance**2,activityKartRadius)*(abs(puckzspeed)+1) # push attack
+                    pushScore[name] += activityKartRadius/max((zDistance+1)**2+xDistance**2,activityKartRadius)*(abs(puckzspeed)/12+10) # push attack
                 timeCountTrend[name][trend] += 1
                 timeCount[name] += 1
         elif dataType == 'p': # p is puck
@@ -70,11 +70,11 @@ def main(data):
             if name in playerPos and name2 in playerPos and trendAttTeam != -1:
                 trend = getTrend()
                 if trend == 'def':
-                    blockScore[name]+=fps/fps_pe/3
-                    pushScore[name2]+=fps/fps_pe/30
+                    blockScore[name]+=10/fps_pe/3
+                    pushScore[name2]+=1/fps_pe/3
                 if trend == 'att':
-                    pushScore[name]+=fps/fps_pe/3
-                    blockScore[name2]+=fps/fps_pe/30
+                    pushScore[name]+=10/fps_pe/3
+                    blockScore[name2]+=1/fps_pe/3
         elif dataType == 'puck_hit_bowl':
             (speed,name) = e
             if name in playerPos and trendAttTeam != -1:
@@ -82,9 +82,9 @@ def main(data):
                 zDistance = (puck['z']-playerPos[name]['z'])*zModifier[name]
                 if zDistance > 0:
                     if trend == 'def':
-                        blockScore[name] += speed**(1/3)*fps/fps_pe/3
+                        blockScore[name] += speed**(1/3)*10/fps_pe/3
                     if trend == 'att':
-                        pushScore[name] += speed**(1/3)*fps/fps_pe/3*max(0,min(1,2-puck['z']*zModifier[name]*2/fieldLen)) # skip stupid push maybe
+                        pushScore[name] += speed**(1/3)*10/fps_pe/3*max(0,min(1,2-puck['z']*zModifier[name]*2/fieldLen)) # skip stupid push maybe
         elif dataType == 'GAME_START':
             fieldLen = 60 # 1/2 field length
             oldPuck, puck, playerPos = {'z':0, 'x':0}, {'z':0, 'x':0}, {} # position
@@ -96,8 +96,8 @@ def main(data):
     r = []
     for name in playerPos:
         if timeCount[name] > fps*10:
-            bs = blockScore[name]*150/timeCountTrend[name]['def']
-            ps = pushScore[name]*150/timeCountTrend[name]['att']
+            bs = blockScore[name]*fps*15/timeCountTrend[name]['def']
+            ps = pushScore[name]*fps*15/timeCountTrend[name]['att']
             r.append([name,
             defScore[name]*35/timeCountTrend[name]['def']+bs,
             attScore[name]*160/timeCountTrend[name]['att']+ps,
